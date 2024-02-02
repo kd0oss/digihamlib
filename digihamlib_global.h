@@ -1,0 +1,12 @@
+#ifndef DIGIHAMLIB_GLOBAL_H
+#define DIGIHAMLIB_GLOBAL_H
+
+#include <QtCore/qglobal.h>
+
+#if defined(DIGIHAMLIB_LIBRARY)
+#  define DIGIHAMLIB_EXPORT Q_DECL_EXPORT
+#else
+#  define DIGIHAMLIB_EXPORT Q_DECL_IMPORT
+#endif
+
+#endif // DIGIHAMLIB_GLOBAL_H
