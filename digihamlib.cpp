@@ -313,7 +313,7 @@ void Digihamlib::process_connect()
             modem = ml.at(1);
         }
 
-        vocoder = "/dev/ttyUSB3"; // *************** take out
+    //    vocoder = "/dev/ttyUSB3"; // *************** take out
 
         const bool txInvert = true;
         const bool rxInvert = false;

@@ -95,6 +95,9 @@ public slots:
     void set_txtimeout(const QString &t) { m_txtimeout = t.simplified().toUInt();}
     void set_toggletx(bool x) { m_toggletx = x; }
     void set_xrf2ref(bool x) { m_xrf2ref = x; }
+    void set_modemTxInvert(bool x) { m_modemTxInvert = x; }
+    void set_modemRxInvert(bool x) { m_modemRxInvert = x; }
+    void set_modemPTTInvert(bool x) { m_modemPTTInvert = x; }
     void set_ipv6(bool ipv6) { m_ipv6 = ipv6; }
     void set_vocoder(QString vocoder) { m_vocoder = vocoder; }
     void set_modem(QString modem) { m_modem = modem; }
@@ -180,6 +183,9 @@ public slots:
     bool get_toggletx() { return m_toggletx; }
     bool get_ipv6() { return m_ipv6; }
     bool get_xrf2ref() { return m_xrf2ref; }
+    bool get_modemTxInvert() { return m_modemTxInvert; }
+    bool get_modemRxInvert() { return m_modemRxInvert; }
+    bool get_modemPTTInvert() { return m_modemPTTInvert; }
     QString get_local_hosts(){ return m_localhosts; }
     QStringList get_vocoders() { return m_vocoders; }
     QStringList get_modems() { return m_modems; }
