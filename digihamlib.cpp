@@ -350,13 +350,13 @@ void Digihamlib::process_connect()
         connect(m_mode, SIGNAL(process_audio(int16_t*,int)), this, SLOT(process_audio(int16_t*,int)));
         connect(m_mode, SIGNAL(update(Mode::MODEINFO)), this, SLOT(update(Mode::MODEINFO)));
         connect(m_mode, SIGNAL(update_log(QString)), this, SLOT(updatelog(QString)));
-        connect(m_mode, SIGNAL(update_output_level(unsigned short)), this, SLOT(update_output_level(unsigned short)));
+//        connect(m_mode, SIGNAL(update_output_level(unsigned short)), this, SLOT(update_output_level(unsigned short)));
         connect(m_modethread, SIGNAL(started()), m_mode, SLOT(begin_connect()));
         connect(m_modethread, SIGNAL(finished()), m_mode, SLOT(deleteLater()));
 //        connect(this, SIGNAL(input_source_changed(int,QString)), m_mode, SLOT(input_src_changed(int,QString)));
         connect(this, SIGNAL(swrx_state_changed(int)), m_mode, SLOT(swrx_state_changed(int)));
         connect(this, SIGNAL(swtx_state_changed(int)), m_mode, SLOT(swtx_state_changed(int)));
-        connect(this, SIGNAL(tx_clicked(bool)), m_mode, SLOT(toggle_tx(bool)));
+//        connect(this, SIGNAL(tx_clicked(bool)), m_mode, SLOT(toggle_tx(bool)));
         connect(this, SIGNAL(tx_pressed()), m_mode, SLOT(start_tx()));
         connect(this, SIGNAL(tx_released()), m_mode, SLOT(stop_tx()));
         connect(this, SIGNAL(mycall_changed(QString)), m_mode, SLOT(mycall_changed(QString)));
