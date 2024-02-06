@@ -22,9 +22,10 @@ public:
     QStringList m_hostsmodel;
     QMap<QString, QString> m_hostmap;
     QStringList m_customhosts;
+    QQueue<int16_t> m_rxaudioq;
+    SerialAMBE *m_ambedev;
 
 signals:
- //   void input_source_changed(int, QString);
     void tx_pressed();
     void tx_released();
     void slot_changed(int);
@@ -46,7 +47,7 @@ signals:
     void m17_rate_changed(int);
     void m17_can_changed(int);
     void update_log(QString);
-    void send_audio(int16_t*, int);
+    void audio_ready(void);
     void update_data(void);
 
 public slots:
@@ -81,7 +82,6 @@ public slots:
     void set_module(const QString &module) { m_module = module.toStdString()[0]; emit module_changed(m_module);}
     void set_protocol(const QString &protocol) { m_protocol = protocol; }
     void set_localhosts(const QString &lhost) { m_localhosts = lhost; }
-//    void set_input_volume(qreal v);
     void set_modelchange(bool t){ m_modelchange = t; }
     void set_iaxuser(const QString &user){ m_iaxuser = user; }
     void set_iaxpass(const QString &pass){ m_iaxpassword = pass; }
@@ -103,7 +103,6 @@ public slots:
     void set_modem(QString modem) { m_modem = modem; }
     void set_swtx(bool swtx) { emit swtx_state_changed(swtx); }
     void set_swrx(bool swrx) { emit swrx_state_changed(swrx); }
- //   void set_agc(bool agc) { emit agc_state_changed(agc); }
  //   void set_mmdvm_direct(bool mmdvm) { m_mdirect = mmdvm; process_mode_change(m_protocol); }
     void set_iaxport(const QString &port){ m_iaxport = port.simplified().toUInt(); }
     void set_dst(QString dst){emit dst_changed(dst);}
@@ -159,16 +158,6 @@ public slots:
     QString get_dmr_options() { return m_dmropts; }
     QString get_dmrtgid() { return m_dmr_destid ? QString::number(m_dmr_destid) : ""; }
     QStringList get_hosts() { return m_hostsmodel; }
-    QString get_ref_host() { return m_saved_refhost; }
-    QString get_dcs_host() { return m_saved_dcshost; }
-    QString get_xrf_host() { return m_saved_xrfhost; }
-    QString get_ysf_host() { return m_saved_ysfhost; }
-    QString get_fcs_host() { return m_saved_fcshost; }
-    QString get_dmr_host() { return m_saved_dmrhost; }
-    QString get_p25_host() { return m_saved_p25host; }
-    QString get_nxdn_host() { return m_saved_nxdnhost; }
-    QString get_m17_host() { return m_saved_m17host; }
-    QString get_iax_host() { return m_saved_iaxhost; }
     QString get_iax_user() { return m_iaxuser; }
     QString get_iax_pass() { return m_iaxpassword; }
     QString get_iax_node() { return m_iaxnode; }
@@ -224,9 +213,6 @@ public slots:
     QString get_build_abi() { return QSysInfo::buildAbi(); }
  //   QString get_software_build() { return VERSION_NUMBER; }
 
- //   void download_file(QString);
- //   void file_downloaded(QString);
- //   void url_downloaded(QString);
     unsigned short get_output_level(){ return m_outlevel; }
     void set_output_level(unsigned short l){ m_outlevel = l; }
 
@@ -252,16 +238,6 @@ private:
     QString m_pkgid;
     QString m_dmropts;
     int m_pc;
-    QString m_saved_refhost;
-    QString m_saved_dcshost;
-    QString m_saved_xrfhost;
-    QString m_saved_ysfhost;
-    QString m_saved_fcshost;
-    QString m_saved_dmrhost;
-    QString m_saved_p25host;
-    QString m_saved_nxdnhost;
-    QString m_saved_m17host;
-    QString m_saved_iaxhost;
     uint32_t m_dmrid;
     uint8_t m_essid;
     uint32_t m_dmr_srcid;

@@ -58,7 +58,7 @@ void DCS::process_udp()
     { //2 way keep alive ping
 		m_modeinfo.count++;
 		m_modeinfo.netmsg.clear();
-        if ( (m_modeinfo.stream_state == STREAM_LOST) || (m_modeinfo.stream_state == STREAM_END) )
+        if ((m_modeinfo.stream_state == STREAM_LOST) || (m_modeinfo.stream_state == STREAM_END))
         {
 			m_modeinfo.stream_state = STREAM_IDLE;
 		}
@@ -84,7 +84,7 @@ void DCS::process_udp()
 		m_modeinfo.ts = QDateTime::currentMSecsSinceEpoch();
 		m_modeinfo.netmsg = QString(buf.data());
 	}
-    if ((size == 100) && (!memcmp(buf.data(), "0001", 4)) )
+    if ((size == 100) && (!memcmp(buf.data(), "0001", 4)))
     {
 		m_rxwatchdog = 0;
 		uint16_t streamid = (buf.data()[43] << 8) | (buf.data()[44] & 0xff);
@@ -366,7 +366,7 @@ void DCS::process_modem_data(QByteArray d)
 		m_tx = true;
 	}
     else
-        if( (p_frame[2] == MMDVM_DSTAR_EOT) || (p_frame[2] == MMDVM_DSTAR_LOST) )
+        if((p_frame[2] == MMDVM_DSTAR_EOT) || (p_frame[2] == MMDVM_DSTAR_LOST))
         {
             m_tx = false;
         }
@@ -548,7 +548,7 @@ void DCS::send_frame(uint8_t *ambe)
 		m_modeinfo.streamid = 0;
 		m_txtimer->stop();
 
-        if ((m_ttsid == 0) && (m_modeinfo.stream_state == TRANSMITTING) )
+        if ((m_ttsid == 0) && (m_modeinfo.stream_state == TRANSMITTING))
         {
     //		m_audio->stop_capture();
 		}
@@ -590,7 +590,7 @@ void DCS::get_ambe()
 
 void DCS::process_rx_data()
 {
-    int16_t *pcm;
+    int16_t pcm[160];
 	uint8_t ambe[9];
 
     if (m_rxwatchdog++ > 100)
@@ -619,10 +619,8 @@ void DCS::process_rx_data()
 		}
 	}
 
-    if ((!m_tx) && (m_rxcodecq.size() > 8) )
+    if ((!m_tx) && (m_rxcodecq.size() > 8))
     {
-        pcm = (int16_t*)malloc(160 * sizeof(int16_t));
-
         for (int i = 0; i < 9; ++i)
         {
 			ambe[i] = m_rxcodecq.dequeue();
@@ -633,9 +631,7 @@ void DCS::process_rx_data()
 			m_ambedev->decode(ambe);
 
             if (m_ambedev->get_audio(pcm)){
-    //			m_audio->write(pcm, 160);
                 emit process_audio(pcm, 160);
-    //			emit update_output_level(m_audio->level());
 			}
 #endif
 		}
@@ -655,7 +651,7 @@ void DCS::process_rx_data()
 		}
 	}
     else
-        if ((m_modeinfo.stream_state == STREAM_END) || (m_modeinfo.stream_state == STREAM_LOST) )
+        if ((m_modeinfo.stream_state == STREAM_END) || (m_modeinfo.stream_state == STREAM_LOST))
         {
             m_rxtimer->stop();
             m_rxwatchdog = 0;

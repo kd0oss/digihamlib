@@ -65,18 +65,18 @@ void NXDN::process_udp()
 	buf.resize(m_udp->pendingDatagramSize());
 	m_udp->readDatagram(buf.data(), buf.size(), &sender, &senderPort);
 
-    if(m_debug){
+    if (m_debug){
         QDebug debug = qDebug();
         debug.noquote();
         QString s = "RECV:";
-        for(int i = 0; i < buf.size(); ++i){
+        for (int i = 0; i < buf.size(); ++i){
             s += " " + QString("%1").arg((uint8_t)buf.data()[i], 2, 16, QChar('0'));
         }
         debug << s;
         emit update_log(s);
     }
-	if(buf.size() == 17){
-		if(m_modeinfo.status == CONNECTING){
+    if (buf.size() == 17){
+        if (m_modeinfo.status == CONNECTING){
 			m_modeinfo.status = CONNECTED_RW;
 			m_rxtimer = new QTimer();
 			connect(m_rxtimer, SIGNAL(timeout()), this, SLOT(process_rx_data()));
@@ -90,16 +90,16 @@ void NXDN::process_udp()
 //			m_audio->init();
 			m_ping_timer->start(1000);
 		}
-		if( (m_modeinfo.stream_state == STREAM_LOST) || (m_modeinfo.stream_state == STREAM_END) ){
+        if ( (m_modeinfo.stream_state == STREAM_LOST) || (m_modeinfo.stream_state == STREAM_END) ){
 			m_modeinfo.stream_state = STREAM_IDLE;
 		}
 		m_modeinfo.count++;
 	}
-	if(buf.size() == 43){
+    if (buf.size() == 43){
 		m_modeinfo.srcid = (uint16_t)((buf.data()[5] << 8) & 0xff00) | (buf.data()[6] & 0xff);
 		m_modeinfo.dstid = (uint16_t)((buf.data()[7] << 8) & 0xff00) | (buf.data()[8] & 0xff);
-		if(get_lich_fct(buf.data()[10U]) == NXDN_LICH_USC_SACCH_NS){
-            if((buf.data()[9U] & 0x08) == 0x08){
+        if (get_lich_fct(buf.data()[10U]) == NXDN_LICH_USC_SACCH_NS){
+            if ((buf.data()[9U] & 0x08) == 0x08){
                 emit update_log("Received EOT");
 				m_modeinfo.frame_number = 0;
 				m_modeinfo.stream_state = STREAM_END;
@@ -107,7 +107,7 @@ void NXDN::process_udp()
 				m_modeinfo.streamid = 0;
 			}
 			else{
-				if(!m_rxtimer->isActive()){
+                if (!m_rxtimer->isActive()){
         //			m_audio->start_playback();
 					m_rxtimer->start(m_rxtimerint);
 				}
@@ -116,8 +116,8 @@ void NXDN::process_udp()
 				qDebug() << "New NXDN stream from " << m_modeinfo.srcid << " to " << m_modeinfo.dstid;
 			}
 		}
-		else if(!m_tx && ( (m_modeinfo.stream_state == STREAM_LOST) || (m_modeinfo.stream_state == STREAM_END) || (m_modeinfo.stream_state == STREAM_IDLE) )){
-			if(!m_rxtimer->isActive()){
+        else if (!m_tx && ( (m_modeinfo.stream_state == STREAM_LOST) || (m_modeinfo.stream_state == STREAM_END) || (m_modeinfo.stream_state == STREAM_IDLE) )){
+            if (!m_rxtimer->isActive()){
             //	m_audio->start_playback();
 				m_rxtimer->start(m_rxtimerint);
 			}
@@ -132,49 +132,49 @@ void NXDN::process_udp()
 		m_rxwatchdog = 0;
 
 		memcpy(ambe, buf.data() + 15, 7);
-		if(m_hwrx){
+        if (m_hwrx){
 			interleave(ambe);
 		}
-		for(int i = 0; i < 7; ++i){
+        for (int i = 0; i < 7; ++i){
 			m_rxcodecq.append(ambe[i]);
 		}
 
 		char t[7];
 		char *d = &(buf.data()[21]);
-		for(int i = 0; i < 6; ++i){
+        for (int i = 0; i < 6; ++i){
 			t[i] = d[i] << 1;
 			t[i] |= (1 & (d[i+1] >> 7));
 		}
 		t[6] = d[6] << 1;
 
 		memcpy(ambe, t, 7);
-		if(m_hwrx){
+        if (m_hwrx){
 			interleave(ambe);
 		}
-		for(int i = 0; i < 7; ++i){
+        for (int i = 0; i < 7; ++i){
 			m_rxcodecq.append(ambe[i]);
 		}
 
 		memcpy(ambe, buf.data() + 29, 7);
-		if(m_hwrx){
+        if (m_hwrx){
 			interleave(ambe);
 		}
-		for(int i = 0; i < 7; ++i){
+        for (int i = 0; i < 7; ++i){
 			m_rxcodecq.append(ambe[i]);
 		}
 
 		d = &(buf.data()[35]);
-		for(int i = 0; i < 6; ++i){
+        for (int i = 0; i < 6; ++i){
 			t[i] = d[i] << 1;
 			t[i] |= (1 & (d[i+1] >> 7));
 		}
 		t[6] = d[6] << 1;
 
 		memcpy(ambe, t, 7);
-		if(m_hwrx){
+        if (m_hwrx){
 			interleave(ambe);
 		}
-		for(int i = 0; i < 7; ++i){
+        for (int i = 0; i < 7; ++i){
 			m_rxcodecq.append(ambe[i]);
 		}
 	}
@@ -187,13 +187,13 @@ void NXDN::interleave(uint8_t *ambe)
 	char dvsi_data[7];
 	memset(dvsi_data, 0, 7);
 
-	for(int i = 0; i < 6; ++i){
-		for(int j = 0; j < 8; j++){
+    for (int i = 0; i < 6; ++i){
+        for (int j = 0; j < 8; j++){
 			ambe_data[j+(8*i)] = (1 & (ambe[i] >> (7 - j)));
 		}
 	}
 	ambe_data[48] = (1 & (ambe[6] >> 7));
-	for(int i = 0, j; i < 49; ++i){
+    for (int i = 0, j; i < 49; ++i){
 		j = dvsi_interleave[i];
 		dvsi_data[j/8] += (ambe_data[i])<<(7-(j%8));
 	}
@@ -225,11 +225,11 @@ void NXDN::send_ping(bool disconnect)
 	out.append((m_modeinfo.gwid >> 0) & 0xff);
 	m_udp->writeDatagram(out, m_address, m_modeinfo.port);
 
-    if(m_debug){
+    if (m_debug){
         QDebug debug = qDebug();
         debug.noquote();
         QString s = "PING:";
-        for(int i = 0; i < out.size(); ++i){
+        for (int i = 0; i < out.size(); ++i){
             s += " " + QString("%1").arg((uint8_t)out.data()[i], 2, 16, QChar('0'));
         }
         debug << s;
@@ -261,13 +261,13 @@ void NXDN::transmit()
 		}
 	}
 
-	if(m_hwtx){
+    if (m_hwtx){
 #if !defined(Q_OS_IOS)
 		m_ambedev->encode(pcm);
 #endif
 	}
 	else{
-		if(m_modeinfo.sw_vocoder_loaded){
+        if (m_modeinfo.sw_vocoder_loaded){
 #ifdef USE_MD380_VOCODER
             md380_encode(ambe, pcm);
 #else
@@ -276,18 +276,18 @@ void NXDN::transmit()
 		}
 		ambe[6] &= 0x80;
 
-		for(int i = 0; i < 7; ++i){
+        for (int i = 0; i < 7; ++i){
 			m_txcodecq.append(ambe[i]);
 		}
 	}
 
-	if(m_tx && (m_txcodecq.size() >= 28)){
-		for(int i = 0; i < 28; ++i){
+    if (m_tx && (m_txcodecq.size() >= 28)){
+        for (int i = 0; i < 28; ++i){
 			m_ambe[i] = m_txcodecq.dequeue();
 		}
 		send_frame();
 	}
-	else if(m_tx == false){
+    else if (m_tx == false){
 		send_frame();
 	}
 }
@@ -296,17 +296,17 @@ void NXDN::send_frame()
 {
 	QByteArray txdata;
 	uint8_t *temp_nxdn;
-	if(m_tx){
+    if (m_tx){
 		m_modeinfo.stream_state = TRANSMITTING;
 		temp_nxdn = get_frame();
 		txdata.append((char *)temp_nxdn, 43);
 		m_udp->writeDatagram(txdata, m_address, m_modeinfo.port);
 
-        if(m_debug){
+        if (m_debug){
             QDebug debug = qDebug();
             debug.noquote();
             QString s = "SEND:";
-            for(int i = 0; i < txdata.size(); ++i){
+            for (int i = 0; i < txdata.size(); ++i){
                 s += " " + QString("%1").arg((uint8_t)txdata.data()[i], 2, 16, QChar('0'));
             }
             debug << s;
@@ -338,7 +338,7 @@ uint8_t * NXDN::get_frame()
 	m_nxdnframe[8U] = (m_modeinfo.gwid >> 0) & 0xFFU;
 	m_nxdnframe[9U] = 0x01U;
 
-	if(!m_txcnt || m_eot){
+    if (!m_txcnt || m_eot){
 		encode_header();
 	}
 	else{
@@ -355,7 +355,7 @@ uint8_t * NXDN::get_frame()
 			m_nxdnframe[9U] |= m_nxdnframe[12U] == 0x08U ? 0x08U : 0x00U;
 		}
 	}
-	if(m_eot){
+    if (m_eot){
 		m_txcnt = 0;
 		m_eot = false;
 	}
@@ -381,7 +381,7 @@ void NXDN::encode_header()
 	set_sacch_struct(0); //Single
 	set_sacch_data(idle);
 	get_sacch(&m_nxdnframe[11U]);
-	if(m_eot){
+    if (m_eot){
 		set_layer3_msgtype(NXDN_MESSAGE_TYPE_TX_REL);
 	}
 	else{
@@ -415,7 +415,7 @@ void NXDN::encode_data()
 	set_layer3_grp(true);
 	set_layer3_blks(0U);
 
-	switch(m_txcnt % 4){
+    switch (m_txcnt % 4){
 	case 0:
 		set_sacch_struct(3);
 		layer3_encode(msg, 18U, 0U);
@@ -439,21 +439,21 @@ void NXDN::encode_data()
 	}
 	get_sacch(&m_nxdnframe[11U]);
 
-	if(m_hwtx){
-		for(int i = 0; i < 4; ++i){
+    if (m_hwtx){
+        for (int i = 0; i < 4; ++i){
 			deinterleave_ambe(&m_ambe[7*i]);
 		}
 	}
 
 	memcpy(&m_nxdnframe[15], m_ambe, 7);
-	for(int i = 0; i < 7; ++i){
+    for (int i = 0; i < 7; ++i){
 		m_nxdnframe[21+i] |= (m_ambe[7+i] >> 1);
 		m_nxdnframe[22+i] = (m_ambe[7+i] & 1) << 7;
 	}
 	m_nxdnframe[28] |= (m_ambe[13] >> 2);
 
 	memcpy(&m_nxdnframe[29], &m_ambe[14], 7);
-	for(int i = 0; i < 7; ++i){
+    for (int i = 0; i < 7; ++i){
 		m_nxdnframe[35+i] |= (m_ambe[21+i] >> 1);
 		m_nxdnframe[36+i] = (m_ambe[21+i] & 1) << 7;
 	}
@@ -466,14 +466,14 @@ void NXDN::deinterleave_ambe(uint8_t *d)
 	uint8_t ambe_data[7];
 	memset(ambe_data, 0, 7);
 
-	for(int i = 0; i < 6; ++i){
-		for(int j = 0; j < 8; j++){
+    for (int i = 0; i < 6; ++i){
+        for (int j = 0; j < 8; j++){
 			dvsi_data[j+(8*i)] = (1 & (d[i] >> (7 - j)));
 		}
 	}
 	dvsi_data[48] = (1 & (d[6] >> 7));
 
-	for(int i = 0, j; i < 49; ++i){
+    for (int i = 0, j; i < 49; ++i){
 		j = dvsi_interleave[i];
 		ambe_data[i/8] += (dvsi_data[j])<<(7-(i%8));
 		//j = dvsi_deinterleave[i];
@@ -620,8 +620,8 @@ void NXDN::get_ambe()
 #if !defined(Q_OS_IOS)
 	uint8_t ambe[7];
 
-	if(m_ambedev->get_ambe(ambe)){
-		for(int i = 0; i < 7; ++i){
+    if (m_ambedev->get_ambe(ambe)){
+        for (int i = 0; i < 7; ++i){
 			m_txcodecq.append(ambe[i]);
 		}
 	}
@@ -630,10 +630,10 @@ void NXDN::get_ambe()
 
 void NXDN::process_rx_data()
 {
-    int16_t *pcm;
+    int16_t pcm[160];
 	uint8_t ambe[7];
 
-    if(m_rxwatchdog++ > 25){
+    if (m_rxwatchdog++ > 25){
         emit update_log("NXDN RX stream timeout");
 		m_rxwatchdog = 0;
 		m_modeinfo.stream_state = STREAM_LOST;
@@ -644,24 +644,21 @@ void NXDN::process_rx_data()
 
     if ((!m_tx) && (m_rxcodecq.size() > 6) )
     {
-        pcm = (int16_t*)malloc(160 * sizeof(int16_t));
-
-        for(int i = 0; i < 7; ++i){
+        for (int i = 0; i < 7; ++i){
 			ambe[i] = m_rxcodecq.dequeue();
 		}
-		if(m_hwrx){
+        if (m_hwrx){
 #if !defined(Q_OS_IOS)
 			m_ambedev->decode(ambe);
 
             if (m_ambedev->get_audio(pcm))
             {
                 emit process_audio(pcm, 160);
-//				emit update_output_level(m_audio->level());
 			}
 #endif
 		}
 		else{
-			if(m_modeinfo.sw_vocoder_loaded){
+            if (m_modeinfo.sw_vocoder_loaded){
 #ifdef USE_MD380_VOCODER
                 md380_decode(ambe, pcm);
 #else
@@ -672,12 +669,10 @@ void NXDN::process_rx_data()
 				memset(pcm, 0, 160 * sizeof(int16_t));
             }
             emit process_audio(pcm, 160);
-    //		emit update_output_level(m_audio->level());
 		}
 	}
 	else if ( (m_modeinfo.stream_state == STREAM_END) || (m_modeinfo.stream_state == STREAM_LOST) ){
 		m_rxtimer->stop();
-    //	m_audio->stop_playback();
 		m_rxwatchdog = 0;
 		m_modeinfo.streamid = 0;
         m_rxcodecq.clear();

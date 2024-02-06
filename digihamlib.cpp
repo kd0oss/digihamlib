@@ -33,7 +33,6 @@ void Digihamlib::updatelog(QString info)
 
 void Digihamlib::update(Mode::MODEINFO info)
 {
-    //   Mode::MODEINFO info = m_mode->m_modeinfo;
     if ((connect_status == Mode::CONNECTING) && (info.status == Mode::DISCONNECTED))
     {
         process_connect();
@@ -47,17 +46,18 @@ void Digihamlib::update(Mode::MODEINFO info)
         emit swtx_state(!m_mode->get_hwtx());
         emit swrx_state(!m_mode->get_hwrx());
         emit rptr2_changed(m_refname + " " + m_module);
-        if(m_mycall.isEmpty()) set_mycall(m_callsign);
-        if(m_urcall.isEmpty()) set_urcall("CQCQCQ");
-        if(m_rptr1.isEmpty()) set_rptr1(m_callsign + " " + m_module);
+        if (m_mycall.isEmpty()) set_mycall(m_callsign);
+        if (m_urcall.isEmpty()) set_urcall("CQCQCQ");
+        if (m_rptr1.isEmpty()) set_rptr1(m_callsign + " " + m_module);
         emit update_log("Connected to " + m_protocol + " " + m_refname + " " + m_host + ":" + QString::number(m_port));
 
-        if(info.sw_vocoder_loaded){
+        if (info.sw_vocoder_loaded)
+        {
             emit update_log("Vocoder plugin loaded");
         }
-        else{
+        else
+        {
             emit update_log("Vocoder plugin not loaded");
-            //         emit open_vocoder_dialog();
         }
     }
 
@@ -65,21 +65,21 @@ void Digihamlib::update(Mode::MODEINFO info)
     m_ambestatustxt = "AMBE: " + (info.ambeprodid.isEmpty() ? "No device" : info.ambeprodid);
     m_mmdvmstatustxt = "MMDVM: ";
 
-    if(info.mmdvm.isEmpty()){
+    if (info.mmdvm.isEmpty()){
         m_mmdvmstatustxt += "No device";
     }
 
     QStringList verlist = info.ambeverstr.split('.');
-    if(verlist.size() > 7){
+    if (verlist.size() > 7){
         m_ambestatustxt += " " + verlist.at(0) + " " + verlist.at(5) + " " + verlist.at(6);
     }
 
     verlist = info.mmdvm.split(' ');
-    if(verlist.size() > 3){
+    if (verlist.size() > 3){
         m_mmdvmstatustxt += verlist.at(0) + " " + verlist.at(1);
     }
 
-    if(info.stream_state == Mode::STREAM_IDLE){
+    if (info.stream_state == Mode::STREAM_IDLE){
         m_data1.clear();
         m_data2.clear();
         m_data3.clear();
@@ -100,22 +100,22 @@ void Digihamlib::update(Mode::MODEINFO info)
         m_data2 = info.src;
         m_data3 = info.dst;
 
-        if(info.type == 0){
+        if (info.type == 0){
             m_data4 = "V/D mode 1";
         }
-        else if(info.type == 1){
+        else if (info.type == 1){
             m_data4 = "Data Full Rate";
         }
-        else if(info.type == 2){
+        else if (info.type == 2){
             m_data4 = "V/D mode 2";
         }
-        else if(info.type == 3){
+        else if (info.type == 3){
             m_data4 = "Voice Full Rate";
         }
         else{
             m_data4 = "";
         }
-        if(info.type >= 0){
+        if (info.type >= 0){
             m_data5 = info.path  ? "Internet" : "Local";
             m_data6 = QString::number(info.frame_number) + "/" + QString::number(info.frame_total);
         }
@@ -123,7 +123,7 @@ void Digihamlib::update(Mode::MODEINFO info)
             m_data5 = m_data6 = "";
         }
     }
-    else if(m_protocol == "DMR"){
+    else if (m_protocol == "DMR"){
         m_data1 = m_dmrids[info.srcid];
         m_data2 = info.srcid ? QString::number(info.srcid) : "";
         m_data3 = info.dstid ? QString::number(info.dstid) : "";
@@ -131,7 +131,7 @@ void Digihamlib::update(Mode::MODEINFO info)
         QString s = "Slot" + QString::number(info.slot);
         QString flco;
 
-        switch( (info.slot & 0x40) >> 6){
+        switch ((info.slot & 0x40) >> 6){
         case 0:
             flco = "Group";
             break;
@@ -146,66 +146,66 @@ void Digihamlib::update(Mode::MODEINFO info)
             break;
         }
 
-        if(info.frame_number){
+        if (info.frame_number){
             QString n = s + " " + flco + " " + QString("%1").arg(info.frame_number, 2, 16, QChar('0'));
             m_data5 = n;
         }
     }
-    else if(m_protocol == "P25"){
+    else if (m_protocol == "P25"){
         m_data1 = m_dmrids[info.srcid];
         m_data2 = info.srcid ? QString::number(info.srcid) : "";
         m_data3 = info.dstid ? QString::number(info.dstid) : "";
         m_data4 = info.srcid ? QString::number(info.srcid) : "";
-        if(info.frame_number){
+        if (info.frame_number){
             QString n = QString("%1").arg(info.frame_number, 2, 16, QChar('0'));
             m_data5 = n;
         }
     }
-    else if(m_protocol == "NXDN"){
-        if(info.srcid){
+    else if (m_protocol == "NXDN"){
+        if (info.srcid){
             m_data1 = m_nxdnids[info.srcid];
             m_data2 = QString::number(info.srcid);
         }
         m_data3 = QString::number(info.dstid);
 
-        if(info.frame_number){
+        if (info.frame_number){
             QString n = QString("%1").arg(info.frame_number, 4, 16, QChar('0'));
             m_data5 = n;
         }
     }
-    else if(m_protocol == "M17"){
+    else if (m_protocol == "M17"){
         m_data1 = info.src;
         m_data2 = info.dst + " " + info.module;
         m_data3 = info.type ? "3200 Voice" : "1600 V/D";
-        if(info.frame_number){
+        if (info.frame_number){
             QString n = QString("%1").arg(info.frame_number, 4, 16, QChar('0'));
             m_data4 = n;
         }
         m_data5 = QString::number(info.streamid, 16);
     }
-    else if(m_protocol == "IAX"){
+    else if (m_protocol == "IAX"){
 
     }
     QString t = QDateTime::fromMSecsSinceEpoch(info.ts).toString("yyyy.MM.dd hh:mm:ss.zzz");
-    if((m_protocol == "DMR") || (m_protocol == "P25") || (m_protocol == "NXDN")){
-        if(info.stream_state == Mode::STREAM_NEW){
+    if ((m_protocol == "DMR") || (m_protocol == "P25") || (m_protocol == "NXDN")){
+        if (info.stream_state == Mode::STREAM_NEW){
             emit update_log(t + " " + m_protocol + " RX started id: " + " srcid: " + QString::number(info.srcid) + " dstid: " + QString::number(info.dstid));
         }
-        if(info.stream_state == Mode::STREAM_END){
+        if (info.stream_state == Mode::STREAM_END){
             emit update_log(t + " " + m_protocol + " RX ended id: " + " srcid: " + QString::number(info.srcid) + " dstid: " + QString::number(info.dstid));
         }
-        if(info.stream_state == Mode::STREAM_LOST){
+        if (info.stream_state == Mode::STREAM_LOST){
             emit update_log(t + " " + m_protocol + " RX lost id: " + " srcid: " + QString::number(info.srcid) + " dstid: " + QString::number(info.dstid));
         }
     }
     else{
-        if(info.stream_state == Mode::STREAM_NEW){
+        if (info.stream_state == Mode::STREAM_NEW){
             emit update_log(t + " " + m_protocol + " RX started id: " + QString::number(info.streamid, 16) + " src: " + info.src + " dst: " + info.gw2);
         }
-        if(info.stream_state == Mode::STREAM_END){
+        if (info.stream_state == Mode::STREAM_END){
             emit update_log(t + " " + m_protocol + " RX ended id: " + QString::number(info.streamid, 16) + " src: " + info.src + " dst: " + info.gw2);
         }
-        if(info.stream_state == Mode::STREAM_LOST){
+        if (info.stream_state == Mode::STREAM_LOST){
             emit update_log(t + " " + m_protocol + " RX lost id: " + QString::number(info.streamid, 16) + " src: " + info.src + " dst: " + info.gw2);
         }
     }
@@ -214,16 +214,16 @@ void Digihamlib::update(Mode::MODEINFO info)
 
 void Digihamlib::tts_changed(QString tts)
 {
-    if(tts == "Mic"){
+    if (tts == "Mic"){
         m_tts = 0;
     }
-    else if(tts == "TTS1"){
+    else if (tts == "TTS1"){
         m_tts = 1;
     }
-    else if(tts == "TTS2"){
+    else if (tts == "TTS2"){
         m_tts = 2;
     }
-    else if(tts == "TTS3"){
+    else if (tts == "TTS3"){
         m_tts = 3;
     }
     else{
@@ -236,13 +236,11 @@ void Digihamlib::tts_changed(QString tts)
 void Digihamlib::tts_text_changed(QString ttstxt)
 {
     m_ttstxt = ttstxt;
-    //   emit input_source_changed(m_tts, m_ttstxt);
 }
 
 void Digihamlib::dtmf_send_clicked(QString dtmf)
 {
     QByteArray tx(dtmf.simplified().toUtf8(), dtmf.simplified().size());
-    //tx.prepend('*');
     //  emit send_dtmf(tx);
 }
 
@@ -269,6 +267,7 @@ void Digihamlib::process_connect()
    //     emit connect_status_changed(1);
         connect_status = Mode::CONNECTING;
         QStringList sl;
+        m_rxaudioq.clear();
 
         if (m_protocol != "IAX")
         {
@@ -306,14 +305,13 @@ void Digihamlib::process_connect()
             QStringList vl = m_vocoder.split(':');
             vocoder = vl.at(1);
         }
+
         QString modem = "";
         if ((m_modem != "None") && (m_modem.contains(':')))
         {
             QStringList ml = m_modem.split(':');
             modem = ml.at(1);
         }
-
-    //    vocoder = "/dev/ttyUSB3"; // *************** take out
 
         const bool txInvert = true;
         const bool rxInvert = false;
@@ -358,11 +356,9 @@ void Digihamlib::process_connect()
 //        connect(this, SIGNAL(input_source_changed(int,QString)), m_mode, SLOT(input_src_changed(int,QString)));
         connect(this, SIGNAL(swrx_state_changed(int)), m_mode, SLOT(swrx_state_changed(int)));
         connect(this, SIGNAL(swtx_state_changed(int)), m_mode, SLOT(swtx_state_changed(int)));
-//        connect(this, SIGNAL(agc_state_changed(int)), m_mode, SLOT(agc_state_changed(int)));
         connect(this, SIGNAL(tx_clicked(bool)), m_mode, SLOT(toggle_tx(bool)));
         connect(this, SIGNAL(tx_pressed()), m_mode, SLOT(start_tx()));
         connect(this, SIGNAL(tx_released()), m_mode, SLOT(stop_tx()));
-//        connect(this, SIGNAL(in_audio_vol_changed(qreal)), m_mode, SLOT(in_audio_vol_changed(qreal)));
         connect(this, SIGNAL(mycall_changed(QString)), m_mode, SLOT(mycall_changed(QString)));
         connect(this, SIGNAL(urcall_changed(QString)), m_mode, SLOT(urcall_changed(QString)));
         connect(this, SIGNAL(rptr1_changed(QString)), m_mode, SLOT(rptr1_changed(QString)));
@@ -431,7 +427,9 @@ void Digihamlib::process_connect()
 
 void Digihamlib::process_audio(int16_t* data, int len)
 {
-    emit send_audio(data, len);
+    for (int i=0; i<len; i++)
+        m_rxaudioq.enqueue(data[i]);
+    emit audio_ready();
 }
 
 void Digihamlib::press_tx()

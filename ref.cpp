@@ -832,7 +832,7 @@ void REF::get_ambe()
 
 void REF::process_rx_data()
 {
-    int16_t *pcm;
+    int16_t pcm[160];
 	uint8_t ambe[9];
 
     if (m_rxwatchdog++ > 50)
@@ -863,8 +863,6 @@ void REF::process_rx_data()
 
     if ((!m_tx) && (m_rxcodecq.size() > 8) )
     {
-        pcm = (int16_t*)malloc(160 * sizeof(int16_t));
-
         for (int i = 0; i < 9; ++i)
         {
 			ambe[i] = m_rxcodecq.dequeue();
