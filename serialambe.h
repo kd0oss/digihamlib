@@ -60,6 +60,7 @@ private:
 	QString m_ambeprodid;
 	uint8_t packet_size;
 	qreal m_decode_gain;
+    bool m_connected;
 	QQueue<char> m_serialdata;
 	void decode_2020(uint8_t *);
 	void encode_2020(int16_t *);

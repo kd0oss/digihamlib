@@ -20,10 +20,13 @@ public:
     QStringList m_vocoders;
     QStringList m_modems;
     QStringList m_hostsmodel;
+    QString m_localhosts;
     QMap<QString, QString> m_hostmap;
     QStringList m_customhosts;
     QQueue<int16_t> m_rxaudioq;
     SerialAMBE *m_ambedev;
+    QMap<uint32_t, QString> m_dmrids;
+    QMap<uint16_t, QString> m_nxdnids;
 
 signals:
     void tx_pressed();
@@ -242,8 +245,6 @@ private:
     uint8_t m_essid;
     uint32_t m_dmr_srcid;
     uint32_t m_dmr_destid;
-    QMap<uint32_t, QString> m_dmrids;
-    QMap<uint16_t, QString> m_nxdnids;
     char m_module;
     int m_port;
     QString m_data1;
@@ -268,7 +269,6 @@ private:
     QString m_iaxpassword;
     QString m_iaxnode;
     QString m_iaxhost;
-    QString m_localhosts;
     int m_iaxport;
     bool m_settings_processed;
     bool m_modelchange;

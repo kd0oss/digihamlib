@@ -59,11 +59,13 @@ SerialAMBE::SerialAMBE(QString protocol) :
 	m_protocol(protocol),
 	m_decode_gain(1.0)
 {
+    m_connected = false;
 }
 
 SerialAMBE::~SerialAMBE()
 {
-	m_serial->close();
+    if (m_connected)
+        m_serial->close();
 }
 
 QMap<QString, QString> SerialAMBE::discover_devices()
@@ -100,6 +102,7 @@ void SerialAMBE::connect_to_serial(QString p)
 {
 	const QString blankString = "N/A";
 	int br = 460800;
+    m_connected = false;
 
 	if((m_protocol != "P25") && (m_protocol != "M17") && (p != "")){
 #ifndef Q_OS_ANDROID
@@ -133,6 +136,7 @@ void SerialAMBE::connect_to_serial(QString p)
 
             connect(m_serial, &QSerialPort::readyRead, this, &SerialAMBE::process_serial);
             config_ambe();
+            m_connected = true;
 #else
 			connect(m_serial, SIGNAL(data_received(QByteArray)), this, SLOT(receive_serial(QByteArray)));
 #endif
