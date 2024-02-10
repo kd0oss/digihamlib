@@ -104,6 +104,7 @@ public slots:
     void set_ipv6(bool ipv6) { m_ipv6 = ipv6; }
     void set_vocoder(QString vocoder) { m_vocoder = vocoder; }
     void set_modem(QString modem) { m_modem = modem; }
+    void set_mode(QString mode) { m_fullmode = mode; }
     void set_swtx(bool swtx) { emit swtx_state_changed(swtx); }
     void set_swrx(bool swrx) { emit swrx_state_changed(swrx); }
  //   void set_mmdvm_direct(bool mmdvm) { m_mdirect = mmdvm; process_mode_change(m_protocol); }
@@ -141,7 +142,7 @@ public slots:
     QString get_ambestatustxt() { return m_ambestatustxt; }
     QString get_mmdvmstatustxt() { return m_mmdvmstatustxt; }
     QString get_netstatustxt() { return m_netstatustxt; }
-    QString get_mode() { return m_protocol; }
+    QString get_mode() { return m_fullmode; }
     QString get_reflector() { return m_refname; }
     QString get_host() { return m_host; }
     QString get_module() { return QString(m_module); }
@@ -240,6 +241,7 @@ private:
     QString m_swid;
     QString m_pkgid;
     QString m_dmropts;
+    QString m_fullmode;
     int m_pc;
     uint32_t m_dmrid;
     uint8_t m_essid;
